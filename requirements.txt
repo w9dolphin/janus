@@ -1,0 +1,35 @@
+# Python dependencies for Local Voice AI Agent
+# Generated from pyproject.toml and code analysis
+
+# Core dependencies
+gradio>=4.0.0
+numpy>=1.24.0
+
+# Audio processing
+librosa>=0.11.0
+openai-whisper>=20250625
+kokoro-onnx>=0.4.7
+
+# LLM and embeddings
+ollama>=0.6.0
+langchain-ollama>=0.1.0
+
+# RAG (Retrieval-Augmented Generation)
+langchain-chroma>=0.1.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+langchain-text-splitters>=0.3.0
+
+# Document processing
+pypdf>=5.0.0
+
+# Utilities
+loguru>=0.7.3
+qrcode[pil]>=7.4.2
+
+# Note: fastrtc is a local package and should be installed separately
+# If using a local editable installation:
+# pip install -e ./fastrtc
+# Or install from PyPI if available:
+# fastrtc[stt]>=0.0.19
+
