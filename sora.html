@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sora - Animated Artifact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-left: 2px solid #e9ecef;
+        }
+
+        .media-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-panel img,
+        .right-panel video {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="media-container">
+            <img src="Static.jpg" alt="Static Image" />
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="media-container">
+            <video id="animeVideo" controls autoplay>
+                <source src="anime.MP4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        // Ensure image and video are the same size
+        function syncMediaSizes() {
+            const image = document.querySelector('.left-panel img');
+            const video = document.getElementById('animeVideo');
+            const leftPanel = document.querySelector('.left-panel');
+            const rightPanel = document.querySelector('.right-panel');
+            
+            // Get the available space in both panels (accounting for padding)
+            const leftWidth = leftPanel.clientWidth - 40;
+            const leftHeight = leftPanel.clientHeight - 40;
+            const rightWidth = rightPanel.clientWidth - 40;
+            const rightHeight = rightPanel.clientHeight - 40;
+            
+            // Use the smaller dimensions to ensure both fit
+            const maxWidth = Math.min(leftWidth, rightWidth);
+            const maxHeight = Math.min(leftHeight, rightHeight);
+            
+            // Set both to the same size (square or based on available space)
+            const size = Math.min(maxWidth, maxHeight);
+            
+            // Apply the same size to both
+            image.style.width = size + 'px';
+            image.style.height = size + 'px';
+            video.style.width = size + 'px';
+            video.style.height = size + 'px';
+        }
+        
+        // Auto-play video when page loads and sync sizes
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('animeVideo');
+            const image = document.querySelector('.left-panel img');
+            
+            // Wait for image to load
+            if (image.complete) {
+                syncMediaSizes();
+            } else {
+                image.addEventListener('load', syncMediaSizes);
+            }
+            
+            // Wait for video metadata to load
+            video.addEventListener('loadedmetadata', function() {
+                syncMediaSizes();
+            });
+            
+            // Sync on window resize
+            window.addEventListener('resize', syncMediaSizes);
+            
+            // Auto-play video
+            video.play().catch(function(error) {
+                // Autoplay was prevented, user will need to click play
+                console.log('Autoplay prevented:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+

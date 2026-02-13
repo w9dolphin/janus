@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        p {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            opacity: 0.9;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .donate-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .donate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        .purchase-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .purchase-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            position: relative;
+            margin: 2% auto;
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .close:hover {
+            color: #f5576c;
+        }
+        #viewer {
+            width: 100%;
+            height: calc(100% - 60px);
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+        .viewer-header {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Donation</h1>
+        <p>Thank you for your interest in supporting us!</p>
+        <div class="button-container">
+            <button class="donate-button" onclick="handleDonation()">Make a Donation</button>
+            <button class="purchase-button" onclick="handlePurchase()">Purchase 3D Scan of Artifact</button>
+        </div>
+    </div>
+
+    <!-- 3D Viewer Modal -->
+    <div id="viewerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeViewer()">&times;</span>
+            <div class="viewer-header">3D Artifact Model</div>
+            <canvas id="viewer"></canvas>
+        </div>
+    </div>
+
+    <!-- Three.js libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+
+        let scene, camera, renderer, controls, mesh;
+        const modal = document.getElementById('viewerModal');
+
+        function handleDonation() {
+            // Add your donation link or payment processing here
+            alert('Redirecting to donation page...');
+            // window.location.href = 'YOUR_DONATION_URL';
+        }
+        
+        function handlePurchase() {
+            // Show the modal and load the STL file
+            modal.style.display = 'block';
+            // Construct absolute path to STL file based on current HTML file location
+            const htmlPath = window.location.href;
+            const htmlDir = htmlPath.substring(0, htmlPath.lastIndexOf('/') + 1);
+            // Ensure we use forward slashes for file:// URLs (works on Windows too)
+            let stlPath = htmlDir + '3dprint.stl';
+            // Normalize path separators for file:// protocol
+            stlPath = stlPath.replace(/\\/g, '/');
+            console.log('Loading STL file from:', stlPath);
+            console.log('HTML file location:', htmlPath);
+            loadSTLFile(stlPath);
+        }
+
+        function closeViewer() {
+            modal.style.display = 'none';
+            // Clean up Three.js resources
+            if (renderer) {
+                renderer.dispose();
+            }
+        }
+
+        function loadSTLFile(filename) {
+            const canvas = document.getElementById('viewer');
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f0f0);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            camera.position.set(0, 0, 50);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            scene.add(directionalLight);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Load STL file
+            const loader = new THREE.STLLoader();
+            
+            // For file:// protocol, we need to handle CORS restrictions
+            // Try loading with the constructed path
+            loader.load(
+                filename,
+                function (geometry) {
+                    const material = new THREE.MeshPhongMaterial({
+                        color: 0x667eea,
+                        specular: 0x111111,
+                        shininess: 200
+                    });
+                    mesh = new THREE.Mesh(geometry, material);
+                    
+                    // Center the model
+                    geometry.computeBoundingBox();
+                    const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+                    geometry.translate(-center.x, -center.y, -center.z);
+                    
+                    // Scale to fit
+                    const size = geometry.boundingBox.getSize(new THREE.Vector3());
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 30 / maxDim;
+                    mesh.scale.set(scale, scale, scale);
+                    
+                    scene.add(mesh);
+                    animate();
+                },
+                function (xhr) {
+                    if (xhr.lengthComputable) {
+                        const percentComplete = (xhr.loaded / xhr.total) * 100;
+                        console.log('Loading: ' + Math.round(percentComplete) + '%');
+                    }
+                },
+                function (error) {
+                    console.error('Error loading STL file:', error);
+                    console.error('File path attempted:', filename);
+                    console.error('Current page URL:', window.location.href);
+                    
+                    // Provide helpful error message
+                    let errorMsg = 'Error loading 3D model.\n\n';
+                    errorMsg += 'File path: ' + filename + '\n';
+                    errorMsg += 'Current page: ' + window.location.href + '\n\n';
+                    
+                    if (window.location.protocol === 'file:') {
+                        errorMsg += 'Note: Browsers block loading local files via file:// protocol for security.\n';
+                        errorMsg += 'Solution: Serve the files via HTTP (e.g., python -m http.server 8000)';
+                    }
+                    
+                    alert(errorMsg);
+                    closeViewer();
+                }
+            );
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) {
+                controls.update();
+            }
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeViewer();
+            }
+        };
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (camera && renderer) {
+                const canvas = document.getElementById('viewer');
+                camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+            }
+        });
+    </script>
+</body>
+</html>
